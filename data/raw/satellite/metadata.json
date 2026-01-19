@@ -1,0 +1,13 @@
+{
+  "filename": "mumbai_satellite.jp2",
+  "filepath": "raw\\satellite\\mumbai_satellite.jp2",
+  "source": "Copernicus Data Space",
+  "description": "Sentinel-2 L2A Imagery",
+  "data_type": "satellite",
+  "size_bytes": 19,
+  "created_at": "2026-01-19T15:44:58.285917",
+  "modified_at": "2026-01-19T15:44:58.285917",
+  "ingested_at": "2026-01-19T16:05:00.414814",
+  "hash_type": "sha256",
+  "hash": "613576c2407475ae9d2f77378ad1eebddc4495a5b3f456d8c02945eda0a97cf9"
+}

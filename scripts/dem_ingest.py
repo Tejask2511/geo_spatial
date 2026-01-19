@@ -1,81 +1,63 @@
-import rasterio
-from rasterio.warp import calculate_default_transform, reproject, Resampling
 from pathlib import Path
+from typing import Optional
+import sys
+import shutil
 
-# --------------------------------------------------
-# 1. Resolve project root safely
-#    Assumes structure:
-#    geo_project/
-#      ├── scripts/
-#      │     └── dem_ingest.py
-#      └── data/
-# --------------------------------------------------
+current_dir = Path(__file__).resolve().parent
+sys.path.append(str(current_dir))
+import ingest_utils
+
 BASE_DIR = Path(__file__).resolve().parents[1]
+RAW_DEM_DIR = BASE_DIR / "data" / "raw" / "dem"
+RAW_DEM_DIR.mkdir(parents=True, exist_ok=True)
 
-# --------------------------------------------------
-# 2. INPUT: DEM file path
-# --------------------------------------------------
-raw_dem = BASE_DIR / "data" / "raw" / "dem" / "mumbai_dem.tif"
 
-# --------------------------------------------------
-# 3. OUTPUT: processed DEM file path
-# --------------------------------------------------
-processed_dem = BASE_DIR / "data" / "processed" / "dem" / "mumbai_dem_4326.tif"
-
-# --------------------------------------------------
-# 4. Pre-flight checks (VERY IMPORTANT)
-# --------------------------------------------------
-print("📂 Project Root:", BASE_DIR)
-print("📄 DEM Path:", raw_dem)
-
-if not raw_dem.exists():
-    raise FileNotFoundError(
-        f"\n❌ DEM file not found!\n"
-        f"Expected at:\n{raw_dem}\n\n"
-        f"✔ Check filename\n"
-        f"✔ Check folder name (dem)\n"
-        f"✔ Ensure DEM is extracted (.tif, not .zip)\n"
+def ingest_dem(file_path: Optional[Path] = None, source: str = "SRTM") -> bool:
+    if file_path is None:
+        tif_files = list(RAW_DEM_DIR.glob("*.tif"))
+        if not tif_files:
+            print(f"No DEM file found in {RAW_DEM_DIR}")
+            print("Supported formats: .tif, .tiff")
+            return False
+        file_path = tif_files[0]
+    
+    if not ingest_utils.validate_file(file_path):
+        print(f"Invalid file: {file_path}")
+        return False
+    
+    if not ingest_utils.validate_format(file_path, ['.tif', '.tiff']):
+        print(f"Unsupported format. Expected: .tif, .tiff")
+        return False
+    
+    dest_path = RAW_DEM_DIR / file_path.name
+    if file_path != dest_path:
+        shutil.copy2(file_path, dest_path)
+        print(f"Copied {file_path.name} to {dest_path}")
+    
+    source_map = {
+        "SRTM": "USGS EarthExplorer",
+        "Copernicus": "Copernicus DEM"
+    }
+    
+    metadata = ingest_utils.generate_metadata(
+        dest_path,
+        source_map.get(source, source),
+        f"{source} DEM data",
+        "dem"
     )
+    
+    metadata_path = RAW_DEM_DIR / "metadata.json"
+    ingest_utils.save_metadata(metadata, metadata_path)
+    
+    print(f"DEM ingested: {dest_path.name}")
+    return True
 
-# Create output directory
-processed_dem.parent.mkdir(parents=True, exist_ok=True)
 
-# --------------------------------------------------
-# 5. Read DEM, detect CRS, reproject to EPSG:4326
-# --------------------------------------------------
-with rasterio.open(raw_dem) as src:
-    if src.crs is None:
-        raise ValueError("❌ DEM has no CRS defined. Cannot reproject.")
-
-    print("🛰️ Original CRS:", src.crs)
-
-    transform, width, height = calculate_default_transform(
-        src.crs,
-        "EPSG:4326",
-        src.width,
-        src.height,
-        *src.bounds
-    )
-
-    metadata = src.meta.copy()
-    metadata.update({
-        "crs": "EPSG:4326",
-        "transform": transform,
-        "width": width,
-        "height": height
-    })
-
-    with rasterio.open(processed_dem, "w", **metadata) as dst:
-        for band in range(1, src.count + 1):
-            reproject(
-                source=rasterio.band(src, band),
-                destination=rasterio.band(dst, band),
-                src_transform=src.transform,
-                src_crs=src.crs,
-                dst_transform=transform,
-                dst_crs="EPSG:4326",
-                resampling=Resampling.nearest
-            )
-
-print("✅ DEM ingestion & reprojection completed successfully")
-print("📦 Output written to:", processed_dem)
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Ingest DEM data")
+    parser.add_argument("--file", type=Path, help="Path to DEM file")
+    parser.add_argument("--source", default="SRTM", choices=["SRTM", "Copernicus"], help="Data source")
+    args = parser.parse_args()
+    
+    ingest_dem(args.file, args.source)

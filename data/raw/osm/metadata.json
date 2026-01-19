@@ -1,0 +1,45 @@
+{
+  "ingestion_date": "2026-01-19T16:05:14.698760",
+  "total_files": 3,
+  "files": [
+    {
+      "filename": "buildings.geojson",
+      "filepath": "raw\\osm\\buildings.geojson",
+      "source": "OpenStreetMap",
+      "description": "Building footprints for Mumbai City, Maharashtra, India",
+      "data_type": "buildings",
+      "size_bytes": 108220179,
+      "created_at": "2026-01-19T16:02:01.735476",
+      "modified_at": "2026-01-19T16:05:08.146628",
+      "ingested_at": "2026-01-19T16:05:08.161901",
+      "hash_type": "sha256",
+      "hash": "3fc4ca0fb16fefb0f99d916d26e799e942781e30e59d564526b64c6b95fb0d92"
+    },
+    {
+      "filename": "roads.geojson",
+      "filepath": "raw\\osm\\roads.geojson",
+      "source": "OpenStreetMap",
+      "description": "Road network for Mumbai City, Maharashtra, India",
+      "data_type": "roads",
+      "size_bytes": 7611541,
+      "created_at": "2026-01-19T16:02:20.360672",
+      "modified_at": "2026-01-19T16:05:14.476280",
+      "ingested_at": "2026-01-19T16:05:14.485868",
+      "hash_type": "sha256",
+      "hash": "c328f4b83e6351840a4d401bf2b32fed4e6a67755b9be026f2948af670eca61f"
+    },
+    {
+      "filename": "water.geojson",
+      "filepath": "raw\\osm\\water.geojson",
+      "source": "OpenStreetMap",
+      "description": "Water features for Mumbai City, Maharashtra, India",
+      "data_type": "water",
+      "size_bytes": 164356,
+      "created_at": "2026-01-19T16:02:33.219685",
+      "modified_at": "2026-01-19T16:05:14.691138",
+      "ingested_at": "2026-01-19T16:05:14.695991",
+      "hash_type": "sha256",
+      "hash": "18519b7ca6d22eff7eac1226db0992c2301ec67a22fea403696a9bd987cd0195"
+    }
+  ]
+}

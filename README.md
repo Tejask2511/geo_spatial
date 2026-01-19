@@ -89,3 +89,126 @@ data/raw/osm/
 
 ---
 
+## How to Run the Data Ingestion Engine
+
+### Prerequisites
+
+1. **Install Python dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+### Running the Project
+
+#### Option 1: Run All Data Types (Recommended)
+
+```bash
+python scripts/ingest.py --place "Mumbai City, Maharashtra, India"
+```
+
+This will ingest:
+- DEM data (from `data/raw/dem/`)
+- Satellite data (from `data/raw/satellite/`)
+- OSM Buildings, Roads, and Water (downloaded from OpenStreetMap)
+
+#### Option 2: Run Individual Modules
+
+**DEM only:**
+```bash
+python scripts/ingest.py --dem-only --dem-file path/to/dem.tif
+```
+
+**Satellite only:**
+```bash
+python scripts/ingest.py --satellite-only --satellite-file path/to/satellite.jp2
+```
+
+**OSM only:**
+```bash
+python scripts/ingest.py --osm-only --place "Mumbai City, Maharashtra, India"
+```
+
+#### Option 3: Run Individual Scripts Directly
+
+**DEM ingestion:**
+```bash
+python scripts/dem_ingest.py --source SRTM
+```
+
+**Satellite ingestion:**
+```bash
+python scripts/satellite_ingest.py --file path/to/satellite.jp2
+```
+
+**OSM ingestion:**
+```bash
+python scripts/osm_ingest.py --place "Mumbai City, Maharashtra, India"
+```
+
+### Command Line Arguments
+
+#### Main Script (`ingest.py`)
+- `--place` - Place name for OSM data (default: "Mumbai City, Maharashtra, India")
+- `--dem-file` - Path to DEM file (optional, will auto-detect if not provided)
+- `--satellite-file` - Path to satellite file (optional, will auto-detect if not provided)
+- `--dem-only` - Ingest DEM only
+- `--satellite-only` - Ingest satellite only
+- `--osm-only` - Ingest OSM only
+
+#### DEM Script (`dem_ingest.py`)
+- `--file` - Path to DEM file (optional)
+- `--source` - Data source: SRTM or Copernicus (default: SRTM)
+
+#### Satellite Script (`satellite_ingest.py`)
+- `--file` - Path to satellite file (optional)
+
+#### OSM Script (`osm_ingest.py`)
+- `--place` - Place name (required)
+- `--skip-buildings` - Skip building ingestion
+- `--skip-roads` - Skip road ingestion
+- `--skip-water` - Skip water feature ingestion
+
+### Example Commands
+
+**Full ingestion:**
+```bash
+cd geo_spatial
+python scripts/ingest.py --place "Mumbai City, Maharashtra, India"
+```
+
+**Custom place:**
+```bash
+python scripts/ingest.py --place "New York City, New York, USA"
+```
+
+**With specific files:**
+```bash
+python scripts/ingest.py --place "Mumbai City, Maharashtra, India" --dem-file data/raw/dem/custom_dem.tif --satellite-file data/raw/satellite/custom_satellite.jp2
+```
+
+### Output
+
+After running, check:
+- `data/raw/dem/` - DEM files and metadata
+- `data/raw/satellite/` - Satellite files and metadata
+- `data/raw/osm/` - OSM GeoJSON files and metadata
+- `data/raw/metadata.json` - Consolidated metadata for all files
+
+### Troubleshooting
+
+**If dependencies are missing:**
+```bash
+pip install -r requirements.txt
+```
+
+**If OSM download fails:**
+- Check internet connection
+- Verify place name is correct
+- Try a different place name
+
+**If file not found:**
+- Ensure raw data files are in the correct directories
+- Check file paths are correct
+- Verify file formats are supported (.tif, .jp2, .geojson)
+
+---

@@ -1,5 +1,5 @@
 rasterio
-geopands
+geopandas
 shapely
 osmnx
 fiona
