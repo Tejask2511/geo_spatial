@@ -280,30 +280,6 @@ Raw data is **never modified**.
 
 ---
 
-## 📂 Folder Structure
-
-geo_project/
-├── data/
-│   ├── processed/
-│   │   ├── dem/
-│   │   ├── satellite/
-│   │   └── osm/
-│   └── normalized/
-│       ├── dem_utm.tif
-│       ├── satellite_utm.tif
-│       ├── buildings_utm.geojson
-│       └── roads_utm.geojson
-│
-├── scripts/
-│   └── normalization/
-│       ├── __init__.py
-│       ├── utm_utils.py
-│       ├── normalize_raster_utm.py
-│       └── normalize_vector_utm.py
-
-
----
-
 # 🧭 PART 1 — CRS Handling
 
 ## 📄 Module: `scripts/crs_handler.py`
@@ -487,12 +463,12 @@ Expected:
 
 ✅ Final Engine-Ready Output
 data/normalized/
-├── dem_utm.tif
-├── satellite_utm.tif
-├── buildings_utm.geojson
-└── roads_utm.geojson
+-├── dem_utm.tif
+-├── satellite_utm.tif
+-├── buildings_utm.geojson
+-└── roads_utm.geojson
 
--✔ Guarantees:
+✔ Guarantees:
 
 -Same CRS
 -Units in meters
