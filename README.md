@@ -323,7 +323,7 @@ Centralized, reusable CRS logic used by **all ingestion scripts**.
 ```python
 handle_raster_crs(input_path, output_path)
 
----
+```
 
 ✔ Reads raster CRS
 ✔ Logs original CRS
