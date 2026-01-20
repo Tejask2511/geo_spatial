@@ -212,3 +212,294 @@ pip install -r requirements.txt
 - Verify file formats are supported (.tif, .jp2, .geojson)
 
 ---
+# 🌍 CRS Handling & Scale Normalization (Phase 1)
+
+> **Engine-safe geospatial preprocessing pipeline**  
+> DEM • Satellite • OpenStreetMap  
+> **1 unit = 1 meter, guaranteed**
+
+---
+
+## 📌 Overview
+
+This repository implements **CRS detection, reprojection, and scale normalization** for all geospatial datasets used in **Phase 1** of the project.
+
+The goal is to convert raw geospatial data (degrees, mixed CRSs) into a **single, consistent, meter-based Cartesian coordinate system** that is safe for:
+
+- Game engines (Unity, Unreal, Three.js)
+- Physics & simulation engines
+- ML pipelines
+- Accurate spatial analysis
+
+---
+
+## ❓ Why CRS & Scale Normalization Matters
+
+Most geospatial data comes in **latitude/longitude (EPSG:4326)**:
+
+- Units are **degrees**, not meters
+- X and Y scales are unequal
+- Distance, slope, and alignment are wrong
+
+Most engines assume:
+
+- Flat Cartesian space
+- Uniform metric units
+
+### ❌ Without Normalization
+- Buildings float above terrain  
+- Roads don’t align with DEM  
+- Distances are wrong  
+- Physics breaks  
+
+### ✅ With Normalization
+- DEM, satellite, roads, buildings align perfectly  
+- Distances are correct  
+- Ready for engines & simulations  
+
+---
+
+## 🧩 Supported Data Types
+
+| Data | Format | Library |
+|----|------|--------|
+| DEM | GeoTIFF (`.tif`) | rasterio |
+| Satellite Imagery | GeoTIFF (`.tif`) | rasterio |
+| OpenStreetMap | GeoJSON / GeoDataFrame | geopandas |
+
+---
+
+## 🧠 Architecture Overview
+
+The pipeline is split into **two strict stages**:
+
+1. **CRS Detection & Reprojection**  
+2. **Scale Normalization (UTM, meters)**  
+
+Raw data is **never modified**.
+
+---
+
+## 📂 Folder Structure
+
+geo_project/
+├── data/
+│   ├── processed/
+│   │   ├── dem/
+│   │   ├── satellite/
+│   │   └── osm/
+│   └── normalized/
+│       ├── dem_utm.tif
+│       ├── satellite_utm.tif
+│       ├── buildings_utm.geojson
+│       └── roads_utm.geojson
+│
+├── scripts/
+│   └── normalization/
+│       ├── __init__.py
+│       ├── utm_utils.py
+│       ├── normalize_raster_utm.py
+│       └── normalize_vector_utm.py
+
+
+---
+
+# 🧭 PART 1 — CRS Handling
+
+## 📄 Module: `scripts/crs_handler.py`
+
+Centralized, reusable CRS logic used by **all ingestion scripts**.
+
+### Responsibilities
+- Detect CRS from metadata
+- Log original CRS
+- Reproject **only if required**
+- Save results in `data/processed/`
+
+---
+
+### 🛰️ Raster CRS Handling (DEM & Satellite)
+
+```python
+handle_raster_crs(input_path, output_path)
+
+---
+
+✔ Reads raster CRS
+✔ Logs original CRS
+✔ Reprojects if needed
+✔ Uses nearest resampling
+✔ Preserves pixel values
+
+Libraries used
+`rasterio`
+`rasterio.warp`
+
+---
+
+🗺️ Vector CRS Handling (OSM)
+`handle_vector_crs(input_path, output_path)`
+
+---
+
+✔ Reads vector CRS
+✔ Reprojects using `to_crs()`
+✔ Preserves topology
+✔ Outputs GeoJSON
+
+Library used
+`geopandas`
+
+---
+
+data/processed/
+├── dem/
+├── satellite/
+└── osm/
+
+---
+
+
+**At this stage**
+- ✔ CRS is consistent across datasets  
+- ❌ Units may still be in degrees  
+
+---
+
+# 📐 PART 2 — Scale Normalization (Engine-Safe)
+
+## 🎯 Goal
+
+Ensure:
+
+> **1 unit = 1 meter**
+
+All datasets are converted to a **local UTM projection** so they are safe for engines, simulations, and physics systems.
+
+---
+
+## 🚫 Rules (DO NOT BREAK)
+
+- **Internal CRS:** Local UTM (meters)  
+- **Engine CRS:** Cartesian meters  
+- **No latitude/longitude past this stage**  
+
+---
+
+## 🛠️ Tools Used
+
+- **GDAL / rasterio** — Raster reprojection  
+- **pyproj** — UTM zone detection  
+- **geopandas** — Vector reprojection  
+
+---
+
+## 📄 Module Breakdown
+
+### `utm_utils.py`
+
+Determines the correct **local UTM CRS** based on longitude.
+
+**Example**
+Mumbai → EPSG:32643
+
+---
+
+### `normalize_raster_utm.py`
+
+Handles **DEM and Satellite raster normalization**.
+
+**Responsibilities**
+- ✔ Converts degrees → meters  
+- ✔ Produces square-meter pixels  
+- ✔ Aligns rasters spatially  
+
+**Input**
+`data/processed/dem/*.tif`
+`data/processed/satellite/*.tif`
+
+**Output**
+
+`data/normalized/dem_utm.tif`
+`data/normalized/satellite_utm.tif`
+
+---
+
+### `normalize_vector_utm.py`
+
+Handles **OSM vector normalization** (buildings, roads).
+
+**Responsibilities**
+- ✔ Converts geometry units to meters  
+- ✔ Preserves topology  
+
+**Input**
+`data/processed/osm/*.geojson`
+
+**Output**
+`data/normalized/buildings_utm.geojson`
+`data/normalized/roads_utm.geojson`
+
+---
+
+## 🧠 Conceptual Example
+### Before (Geographic CRS)
+
+(72.8395, 18.9336)
+Units: degrees
+
+### After (UTM Projected CRS)
+(379245.27, 2095618.92)
+Units: meters
+
+✔ Correct distances  
+✔ Engine-safe coordinates  
+
+---
+
+## ▶️ How to Run Locally
+
+### 1️⃣ Activate Virtual Environment
+
+```bash
+# Windows
+venv\Scripts\activate
+
+# macOS / Linux
+source venv/bin/activate
+
+---
+
+2️⃣ Normalize Rasters (DEM + Satellite)
+python -m scripts.normalization.normalize_raster_utm
+
+Expected:
+DEM → UTM
+Satellite → UTM
+
+3️⃣ Normalize Vectors (Buildings + Roads)
+python -m scripts.normalization.normalize_vector_utm
+
+Expected:
+Buildings → UTM
+Roads → UTM
+
+✅ Final Engine-Ready Output
+data/normalized/
+├── dem_utm.tif
+├── satellite_utm.tif
+├── buildings_utm.geojson
+└── roads_utm.geojson
+
+✔ Guarantees:
+
+Same CRS
+Units in meters
+Perfect spatial alignment
+Ready for engines, simulations & ML
+
+🏁 Status
+
+✔ CRS detection completed
+✔ Scale normalization completed
+✔ Engine-safe geospatial pipeline ready
