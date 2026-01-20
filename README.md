@@ -325,30 +325,30 @@ handle_raster_crs(input_path, output_path)
 
 ```
 
-✔ Reads raster CRS
-✔ Logs original CRS
-✔ Reprojects if needed
-✔ Uses nearest resampling
-✔ Preserves pixel values
+-✔ Reads raster CRS
+-✔ Logs original CRS
+-✔ Reprojects if needed
+-✔ Uses nearest resampling
+-✔ Preserves pixel values
 
 Libraries used
-`rasterio`
-`rasterio.warp`
+-`rasterio`
+-`rasterio.warp`
 
 ---
 
 🗺️ Vector CRS Handling (OSM)
-`handle_vector_crs(input_path, output_path)`
+-`handle_vector_crs(input_path, output_path)`
 
 ---
 
-✔ Reads vector CRS
-✔ Reprojects using `to_crs()`
-✔ Preserves topology
-✔ Outputs GeoJSON
+-✔ Reads vector CRS
+-✔ Reprojects using `to_crs()`
+-✔ Preserves topology
+-✔ Outputs GeoJSON
 
 Library used
-`geopandas`
+-`geopandas`
 
 ---
 
@@ -415,13 +415,13 @@ Handles **DEM and Satellite raster normalization**.
 - ✔ Aligns rasters spatially  
 
 **Input**
-`data/processed/dem/*.tif`
-`data/processed/satellite/*.tif`
+-`data/processed/dem/*.tif`
+-`data/processed/satellite/*.tif`
 
 **Output**
 
-`data/normalized/dem_utm.tif`
-`data/normalized/satellite_utm.tif`
+-`data/normalized/dem_utm.tif`
+-`data/normalized/satellite_utm.tif`
 
 ---
 
@@ -434,26 +434,26 @@ Handles **OSM vector normalization** (buildings, roads).
 - ✔ Preserves topology  
 
 **Input**
-`data/processed/osm/*.geojson`
+-`data/processed/osm/*.geojson`
 
 **Output**
-`data/normalized/buildings_utm.geojson`
-`data/normalized/roads_utm.geojson`
+-`data/normalized/buildings_utm.geojson`
+-`data/normalized/roads_utm.geojson`
 
 ---
 
 ## 🧠 Conceptual Example
 ### Before (Geographic CRS)
 
-(72.8395, 18.9336)
-Units: degrees
+-(72.8395, 18.9336)
+-Units: degrees
 
 ### After (UTM Projected CRS)
-(379245.27, 2095618.92)
-Units: meters
+-(379245.27, 2095618.92)
+-Units: meters
 
-✔ Correct distances  
-✔ Engine-safe coordinates  
+-✔ Correct distances  
+-✔ Engine-safe coordinates  
 
 ---
 
@@ -467,22 +467,23 @@ venv\Scripts\activate
 
 # macOS / Linux
 source venv/bin/activate
+```
 
 ---
 
 2️⃣ Normalize Rasters (DEM + Satellite)
-python -m scripts.normalization.normalize_raster_utm
+-`python -m scripts.normalization.normalize_raster_utm`
 
 Expected:
-DEM → UTM
-Satellite → UTM
+-DEM → UTM
+-Satellite → UTM
 
 3️⃣ Normalize Vectors (Buildings + Roads)
-python -m scripts.normalization.normalize_vector_utm
+-`python -m scripts.normalization.normalize_vector_utm`
 
 Expected:
-Buildings → UTM
-Roads → UTM
+-Buildings → UTM
+-Roads → UTM
 
 ✅ Final Engine-Ready Output
 data/normalized/
@@ -491,15 +492,15 @@ data/normalized/
 ├── buildings_utm.geojson
 └── roads_utm.geojson
 
-✔ Guarantees:
+-✔ Guarantees:
 
-Same CRS
-Units in meters
-Perfect spatial alignment
-Ready for engines, simulations & ML
+-Same CRS
+-Units in meters
+-Perfect spatial alignment
+-Ready for engines, simulations & ML
 
 🏁 Status
 
-✔ CRS detection completed
-✔ Scale normalization completed
-✔ Engine-safe geospatial pipeline ready
+-✔ CRS detection completed
+-✔ Scale normalization completed
+-✔ Engine-safe geospatial pipeline ready
