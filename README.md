@@ -336,15 +336,6 @@ handle_vector_crs(input_path, output_path)
 
 ---
 
-### 📦 CRS-Processed Output Structure
-
-data/processed/
-├── dem/
-├── satellite/
-└── osm/
-
----
-
 **At this stage**
 - ✔ CRS is consistent across datasets  
 - ❌ Units may still be in degrees  
@@ -386,7 +377,7 @@ All datasets are converted to a **local UTM projection** so they are safe for en
 Determines the correct **local UTM CRS** based on longitude.
 
 **Example**
-Mumbai → EPSG:32643
+- Mumbai → EPSG:32643
 
 ---
 
@@ -400,13 +391,13 @@ Handles **DEM and Satellite raster normalization**.
 - ✔ Aligns rasters spatially  
 
 **Input**
--`data/processed/dem/*.tif`
--`data/processed/satellite/*.tif`
+- `data/processed/dem/*.tif`
+- `data/processed/satellite/*.tif`
 
 **Output**
 
--`data/normalized/dem_utm.tif`
--`data/normalized/satellite_utm.tif`
+- `data/normalized/dem_utm.tif`
+- `data/normalized/satellite_utm.tif`
 
 ---
 
@@ -419,26 +410,25 @@ Handles **OSM vector normalization** (buildings, roads).
 - ✔ Preserves topology  
 
 **Input**
--`data/processed/osm/*.geojson`
+- `data/processed/osm/*.geojson`
 
 **Output**
--`data/normalized/buildings_utm.geojson`
--`data/normalized/roads_utm.geojson`
+- `data/normalized/buildings_utm.geojson`
+- `data/normalized/roads_utm.geojson`
 
 ---
 
 ## 🧠 Conceptual Example
 ### Before (Geographic CRS)
-
--(72.8395, 18.9336)
--Units: degrees
+- (72.8395, 18.9336)
+- Units: degrees
 
 ### After (UTM Projected CRS)
--(379245.27, 2095618.92)
--Units: meters
+- (379245.27, 2095618.92)
+- Units: meters
 
--✔ Correct distances  
--✔ Engine-safe coordinates  
+- ✔ Correct distances  
+- ✔ Engine-safe coordinates  
 
 ---
 
@@ -456,43 +446,33 @@ source venv/bin/activate
 
 ---
 
-2️⃣ Normalize Rasters (DEM + Satellite)
+### 2️⃣ Normalize Rasters (DEM + Satellite)
 python -m scripts.normalization.normalize_raster_utm
 
-
 Expected Output
+- DEM → UTM
+- Satellite → UTM
 
-DEM → UTM
+---
 
-Satellite → UTM
-
-3️⃣ Normalize Vectors (Buildings + Roads)
+### 3️⃣ Normalize Vectors (Buildings + Roads)
 python -m scripts.normalization.normalize_vector_utm
 
-
 Expected Output
+- Buildings → UTM
+- Roads → UTM
 
-Buildings → UTM
+----
 
-Roads → UTM
+## Guarantees
 
-✅ Final Engine-Ready Output
-data/normalized/
-├── dem_utm.tif
-├── satellite_utm.tif
-├── buildings_utm.geojson
-└── roads_utm.geojson
+- ✔ Same CRS
+- ✔ Units in meters
+- ✔ Perfect spatial alignment
+- ✔ Ready for engines, simulations & ML
 
+## 🏁 Status
 
-Guarantees
-
-✔ Same CRS
-✔ Units in meters
-✔ Perfect spatial alignment
-✔ Ready for engines, simulations & ML
-
-🏁 Status
-
-✔ CRS detection completed
-✔ Scale normalization completed
-✔ Engine-safe geospatial pipeline ready
+- ✔ CRS detection completed
+- ✔ Scale normalization completed
+- ✔ Engine-safe geospatial pipeline ready
