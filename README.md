@@ -427,9 +427,6 @@ Handles **OSM vector normalization** (buildings, roads).
 - (379245.27, 2095618.92)
 - Units: meters
 
-- ✔ Correct distances  
-- ✔ Engine-safe coordinates  
-
 ---
 
 ## ▶️ How to Run Locally
