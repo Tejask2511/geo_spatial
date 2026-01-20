@@ -301,32 +301,42 @@ handle_raster_crs(input_path, output_path)
 
 ```
 
--✔ Reads raster CRS
--✔ Logs original CRS
--✔ Reprojects if needed
--✔ Uses nearest resampling
--✔ Preserves pixel values
+**Responsibilities**
 
-Libraries used
--`rasterio`
--`rasterio.warp`
+- ✔ Reads raster CRS  
+- ✔ Logs original CRS  
+- ✔ Reprojects only if required  
+- ✔ Uses nearest-neighbor resampling  
+- ✔ Preserves original pixel values  
 
----
+**Libraries Used**
 
-🗺️ Vector CRS Handling (OSM)
--`handle_vector_crs(input_path, output_path)`
+- `rasterio`
+- `rasterio.warp`
 
 ---
 
--✔ Reads vector CRS
--✔ Reprojects using `to_crs()`
--✔ Preserves topology
--✔ Outputs GeoJSON
+### 🗺️ Vector CRS Handling (OSM)
 
-Library used
--`geopandas`
+**Function**
+
+handle_vector_crs(input_path, output_path)
 
 ---
+**Responsibilities**
+
+- ✔ Reads vector CRS  
+- ✔ Reprojects using `GeoDataFrame.to_crs()`  
+- ✔ Preserves topology  
+- ✔ Outputs GeoJSON  
+
+**Library Used**
+
+- `geopandas`
+
+---
+
+### 📦 CRS-Processed Output Structure
 
 data/processed/
 ├── dem/
@@ -334,7 +344,6 @@ data/processed/
 └── osm/
 
 ---
-
 
 **At this stage**
 - ✔ CRS is consistent across datasets  
@@ -448,35 +457,42 @@ source venv/bin/activate
 ---
 
 2️⃣ Normalize Rasters (DEM + Satellite)
--`python -m scripts.normalization.normalize_raster_utm`
+python -m scripts.normalization.normalize_raster_utm
 
-Expected:
--DEM → UTM
--Satellite → UTM
+
+Expected Output
+
+DEM → UTM
+
+Satellite → UTM
 
 3️⃣ Normalize Vectors (Buildings + Roads)
--`python -m scripts.normalization.normalize_vector_utm`
+python -m scripts.normalization.normalize_vector_utm
 
-Expected:
--Buildings → UTM
--Roads → UTM
+
+Expected Output
+
+Buildings → UTM
+
+Roads → UTM
 
 ✅ Final Engine-Ready Output
 data/normalized/
--├── dem_utm.tif
--├── satellite_utm.tif
--├── buildings_utm.geojson
--└── roads_utm.geojson
+├── dem_utm.tif
+├── satellite_utm.tif
+├── buildings_utm.geojson
+└── roads_utm.geojson
 
-✔ Guarantees:
 
--Same CRS
--Units in meters
--Perfect spatial alignment
--Ready for engines, simulations & ML
+Guarantees
+
+✔ Same CRS
+✔ Units in meters
+✔ Perfect spatial alignment
+✔ Ready for engines, simulations & ML
 
 🏁 Status
 
--✔ CRS detection completed
--✔ Scale normalization completed
--✔ Engine-safe geospatial pipeline ready
+✔ CRS detection completed
+✔ Scale normalization completed
+✔ Engine-safe geospatial pipeline ready
